@@ -43,7 +43,10 @@ async function updatekomik(req, res) {
         if (!komik) {
             return res.status(404).json({ error: 'komik not found' });
         }
-        await komik.update({ title, description, author });
+        komik.title = title;
+        komik.description = description;
+        komik.author = author;
+        await komik.save();
         res.status(200).json(komik);
     } catch (err) {
         console.error('Error updating komik:', err.message);
@@ -59,7 +62,7 @@ async function deletekomik(req, res) {
             return res.status(404).json({ error: 'komik not found' });
         }
         await komik.destroy();
-        res.status(204).send();
+        res.status(200).json({ message: 'komik deleted successfully' });
     }
     catch (err) {
         console.error('Error deleting komik:', err.message);
