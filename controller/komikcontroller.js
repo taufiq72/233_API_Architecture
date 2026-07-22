@@ -66,3 +66,11 @@ async function deletekomik(req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+module.exports = {
+    getAllkomik,
+    getkomikById,
+    createkomik,
+    updatekomik,
+    deletekomik
+};
