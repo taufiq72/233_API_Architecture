@@ -1,8 +1,9 @@
-const db = require('../models');
+const { Komik } = require('../models');
 
-async function getAllkomik(req, res) {
+// GET all komik
+async function getAllKomik(req, res) {
     try {
-        const komik = await db.komik.findAll();
+        const komik = await Komik.findAll();
         res.status(200).json(komik);
     } catch (err) {
         console.error('Error fetching komik:', err.message);
@@ -10,12 +11,13 @@ async function getAllkomik(req, res) {
     }
 }
 
-async function getkomikById(req, res) {
+// GET komik by ID
+async function getKomikById(req, res) {
     const { id } = req.params;
     try {
-        const komik = await db.komik.findByPk(id);
+        const komik = await Komik.findByPk(id);
         if (!komik) {
-            return res.status(404).json({ error: 'komik not found' });
+            return res.status(404).json({ error: 'Komik not found' });
         }
         res.status(200).json(komik);
     } catch (err) {
@@ -24,29 +26,40 @@ async function getkomikById(req, res) {
     }
 }
 
-async function createkomik(req, res) {
+// CREATE new komik
+async function createKomik(req, res) {
     const { title, description, author } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ error: 'Title is required' });
+    }
+
     try {
-        const newkomik = await db.komik.create({ title, description, author });
-        res.status(201).json(newkomik);
+        const newKomik = await Komik.create({ title, description, author });
+        res.status(201).json(newKomik);
     } catch (err) {
         console.error('Error creating komik:', err.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
-async function updatekomik(req, res) {
+// UPDATE komik
+async function updateKomik(req, res) {
     const { id } = req.params;
     const { title, description, author } = req.body;
+
     try {
-        const komik = await db.komik.findByPk(id);
+        const komik = await Komik.findByPk(id);
         if (!komik) {
-            return res.status(404).json({ error: 'komik not found' });
+            return res.status(404).json({ error: 'Komik not found' });
         }
-        komik.title = title;
-        komik.description = description;
-        komik.author = author;
-        await komik.save();
+
+        await komik.update({
+            title: title ?? komik.title,
+            description: description ?? komik.description,
+            author: author ?? komik.author
+        });
+
         res.status(200).json(komik);
     } catch (err) {
         console.error('Error updating komik:', err.message);
@@ -54,26 +67,27 @@ async function updatekomik(req, res) {
     }
 }
 
-async function deletekomik(req, res) {
+// DELETE komik
+async function deleteKomik(req, res) {
     const { id } = req.params;
     try {
-        const komik = await db.komik.findByPk(id);
+        const komik = await Komik.findByPk(id);
         if (!komik) {
-            return res.status(404).json({ error: 'komik not found' });
+            return res.status(404).json({ error: 'Komik not found' });
         }
+
         await komik.destroy();
-        res.status(200).json({ message: 'komik deleted successfully' });
-    }
-    catch (err) {
+        res.status(200).json({ message: 'Komik deleted successfully' });
+    } catch (err) {
         console.error('Error deleting komik:', err.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
 module.exports = {
-    getAllkomik,
-    getkomikById,
-    createkomik,
-    updatekomik,
-    deletekomik
+    getAllKomik,
+    getKomikById,
+    createKomik,
+    updateKomik,
+    deleteKomik
 };
