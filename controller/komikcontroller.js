@@ -50,3 +50,19 @@ async function updatekomik(req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+async function deletekomik(req, res) {
+    const { id } = req.params;
+    try {
+        const komik = await db.komik.findByPk(id);
+        if (!komik) {
+            return res.status(404).json({ error: 'komik not found' });
+        }
+        await komik.destroy();
+        res.status(204).send();
+    }
+    catch (err) {
+        console.error('Error deleting komik:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
